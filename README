@@ -1,22 +1,19 @@
-HasDetails
-==========
+= HasDetails
 
 HasDetails allows you to store a large amount of (optional) attributes for any model's instance in a serialized column. It takes care of adding convenience methods to your model, and verifies that the value being assigned is indeed (one of) the type(s) required for that attribute.
 
-Example
-=======
+= Example
 
-class User << ActiveRecord::Base
-	has_details :firstname => String,
-	            :lastname => String,
-	            :birthday => Date,
-	            :gender => [:male, :female]
-end
+  class User << ActiveRecord::Base
+    has_details :firstname => String,
+                :lastname => String,
+                :birthday => Date,
+                :gender => [:male, :female]
+  end
+  
+  john = User.find(1)
+  john.birthday = 5.years.ago
+  john.gender
+  => :male
 
-john = User.find(1)
-john.birthday = 5.years.ago
-john.gender
-=> :male
-
-=======
 Copyright (c) 2008 Marten Veldthuis, released under the MIT license
