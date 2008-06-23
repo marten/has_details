@@ -35,7 +35,7 @@ module HasDetails
       configuration.update(options) if options.is_a?(Hash)
       
       raise(ArgumentError, "You must be supply at least one field in the configuration hash") unless configuration.keys.size > 0
-      raise(Exception, "A #{configuration[:column]} column must be present in the database for this plugin.") unless columns.include?(:details)
+#      raise(Exception, "A #{configuration[:column]} column must be present in the database for this plugin.") unless columns.include?(:details)
       
       serialize configuration[:column], Hash
       
@@ -44,17 +44,17 @@ module HasDetails
         exception_code = t.is_a?(Array) ? "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)" : \
                                           "raise \"Assigned value must be a #{t.inspect}\" unless val.is_a?(#{t.inspect})"
         
-        puts <<-EOV
+        class_eval <<-EOV
           def #{f}
-            details ||= {}
-            details[:#{f}]
+            self.details ||= {}
+            self.details[:#{f}]
           end
           
           def #{f}=(val)
             #{exception_code}
 
-            details ||= {}
-            details[:#{f}] = val
+            self.details ||= {}
+            self.details[:#{f}] = val
           end
         EOV
       end
