@@ -1,0 +1,19 @@
+HasDetails
+==========
+
+HasDetails 
+
+Example
+=======
+
+class User << ActiveRecord::Base
+	has_details :firstname => String,
+	            :lastname => String,
+	            :birthday => Date,
+	            :gender => Symbol
+	
+end
+
+
+=======
+Copyright (c) 2008 Marten Veldthuis, released under the MIT license
