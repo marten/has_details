@@ -1,7 +1,6 @@
 module HasDetails
   def self.included(base)
     base.extend(ClassMethods)
-    base.send(:include, InstanceMethods)
   end
   
   # HasDetails allows you to store a large amount of (optional) attributes for any model's instance in a 
