@@ -42,7 +42,7 @@ module HasDetails
       configuration.each do |f,t|
 
         exception_code = t.is_a?(Array) ? "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)" : \
-                                          "raise \"Assigned value must be a #{t.inspect}\" unless val.is_a?(#{t.inspect})"
+                                          "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
         
         class_eval <<-EOV
           def #{f}
@@ -54,7 +54,11 @@ module HasDetails
             #{exception_code}
 
             self.details ||= {}
-            self.details[:#{f}] = val
+            if val.nil?
+              self.details.delete(:#{f})
+            else
+              self.details[:#{f}] = val
+            end
           end
         EOV
       end
