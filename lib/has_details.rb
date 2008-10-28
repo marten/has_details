@@ -41,8 +41,14 @@ module HasDetails
       
       configuration.each do |f,t|
 
-        exception_code = t.is_a?(Array) ? "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)" : \
-                                          "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
+        exception_code = if t.is_a?(Array)
+          "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)"
+        elsif t == :boolean
+          # everything can be converted to boolean so we don't have an exception here
+          "val = ActiveRecord::ConnectionAdapters::Column::TRUE_VALUES.include?(val) unless val.nil?"
+        else
+          "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
+        end
         
         class_eval <<-EOV
           def #{f}
@@ -61,6 +67,14 @@ module HasDetails
             end
           end
         EOV
+
+        if t == :boolean
+          class_eval <<-EOS
+            def #{f}?
+              self.#{f} ? true : false
+            end
+          EOS
+        end
       end
       
     end
