@@ -46,6 +46,8 @@ module HasDetails
         elsif t == :boolean
           # everything can be converted to boolean so we don't have an exception here
           "val = ActiveRecord::ConnectionAdapters::Column::TRUE_VALUES.include?(val) unless val.nil?"
+        elsif t == Integer
+          "val = Integer(val) rescue nil"
         else
           "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
         end
