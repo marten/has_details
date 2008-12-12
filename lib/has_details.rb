@@ -31,34 +31,34 @@ module HasDetails
     # * +:field => ClassName+ (values assigned to +field+ must be of class +ClassName+)
     # * +:field => [:symbol, :othersymbol]+  (values assigned to +field+ must be included in the array given)
     def has_details(options = {})
-      configuration = { :column => :details}
+      configuration = {:column => :details}
       configuration.update(options) if options.is_a?(Hash)
       column = configuration[:column]
 
       raise(ArgumentError, "You must be supply at least one field in the configuration hash") unless configuration.keys.size > 0
-      raise(Exception, "A #{column.inspect} column must be present in the database for this plugin.") unless column_names.include?(column.to_s)
+      raise(Exception, "A #{table_name}.#{column.inspect} column must be present in the database for this plugin.") unless column_names.include?(column.to_s)
 
       serialize column, Hash
 
       configuration.each do |f,t|
         unless f == :column
-          exception_code = t.is_a?(Array) ? "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)" : \
-                                            "raise \"Assigned value must be a #{t.inspect}\" unless val.is_a?(#{t.inspect})"
+        exception_code = t.is_a?(Array) ? "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)" : \
+                                          "raise \"Assigned value must be a #{t.inspect}\" unless val.is_a?(#{t.inspect})"
 
-          class_eval <<-EOV
-            def #{f}
+        class_eval <<-EOV
+          def #{f}
               self.#{column.to_s} ||= {}
               self.#{column.to_s}[:#{f}]
-            end
+          end
 
-            def #{f}=(val)
-              #{exception_code}
+          def #{f}=(val)
+            #{exception_code}
 
               self.#{column.to_s} ||= {}
               self.#{column.to_s}[:#{f}] = val
-            end
-          EOV
-        end
+          end
+        EOV
+      end
       end
     end
   end
