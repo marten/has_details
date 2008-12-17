@@ -55,6 +55,7 @@ module HasDetails
             #{exception_code}
 
               self.#{column.to_s} ||= {}
+              self.#{column.to_s}_will_change! # Fix bug partial updates in Rails 2.1.0
               self.#{column.to_s}[:#{f}] = val
           end
         EOV
