@@ -62,7 +62,7 @@ module HasDetails
             #{exception_code}
 
             self.details ||= {}
-            if val.nil?
+            if val.nil?#{" || val.blank? " if t == String}
               self.details.delete(:#{f})
             else
               self.details[:#{f}] = val
