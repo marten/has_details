@@ -47,7 +47,7 @@ module HasDetails
           # everything can be converted to boolean so we don't have an exception here
           "val = ActiveRecord::ConnectionAdapters::Column::TRUE_VALUES.include?(val) unless val.nil?"
         elsif t == Integer
-          "val = Integer(val) rescue nil"
+          "val = (val.nil? ? nil : (Integer(val) rescue nil))"
         else
           "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
         end
@@ -56,6 +56,12 @@ module HasDetails
           def #{f}
             self.details ||= {}
             self.details[:#{f}]
+          end
+
+          def #{f}_before_type_cast
+            if self.details
+              self.details[:#{f}]
+            end
           end
           
           def #{f}=(val)
