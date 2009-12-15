@@ -37,7 +37,7 @@ module HasDetails
       raise(ArgumentError, "You must be supply at least one field in the configuration hash") unless configuration.keys.size > 0
 #      raise(Exception, "A #{configuration[:column]} column must be present in the database for this plugin.") unless columns.include?(:details)
       
-      serialize configuration[:column], Hash
+      serialize configuration.delete(:column), Hash
       
       configuration.each do |f,t|
 
