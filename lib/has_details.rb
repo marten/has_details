@@ -48,6 +48,8 @@ module HasDetails
           "val = ActiveRecord::ConnectionAdapters::Column::TRUE_VALUES.include?(val) unless val.nil?"
         elsif t == Integer
           "val = (val.nil? ? nil : (Integer(val) rescue nil))"
+        elsif t == BigDecimal
+          "val = val.is_a?(BigDecimal) ? val : val.to_d"
         else
           "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
         end
