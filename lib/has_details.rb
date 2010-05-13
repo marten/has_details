@@ -36,29 +36,59 @@ module HasDetails
       column = configuration[:column]
 
       raise(ArgumentError, "You must be supply at least one field in the configuration hash") unless configuration.keys.size > 0
-      raise(Exception, "A #{table_name}.#{column.inspect} column must be present in the database for this plugin.") unless column_names.include?(column.to_s)
-
-      serialize column, Hash
-
+#      raise(Exception, "A #{configuration[:column]} column must be present in the database for this plugin.") unless columns.include?(:details)
+      
+      col = configuration.delete(:column).to_s
+      unless serialized_attributes[col]
+        serialize col, Hash
+      end
+      
       configuration.each do |f,t|
-        unless f == :column
-        exception_code = t.is_a?(Array) ? "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)" : \
-                                          "raise \"Assigned value must be a #{t.inspect}\" unless val.is_a?(#{t.inspect})"
 
+        exception_code = if t.is_a?(Array)
+          "raise \"Assigned value must be one of #{t.inspect}\" unless #{t.inspect}.include?(val)"
+        elsif t == :boolean
+          # everything can be converted to boolean so we don't have an exception here
+          "val = ActiveRecord::ConnectionAdapters::Column::TRUE_VALUES.include?(val) unless val.nil?"
+        elsif t == Integer
+          "val = (val.nil? ? nil : (Integer(val) rescue nil))"
+        elsif t == BigDecimal
+          "val = val.is_a?(BigDecimal) ? val : (val.blank? ? nil : val.to_d)"
+        else
+          "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
+        end
+        
         class_eval <<-EOV
           def #{f}
               self.#{column.to_s} ||= {}
               self.#{column.to_s}[:#{f}]
           end
 
+          def #{f}_before_type_cast
+            if self.details
+              self.details[:#{f}]
+            end
+          end
+          
           def #{f}=(val)
             #{exception_code}
 
-              self.#{column.to_s} ||= {}
-              self.#{column.to_s}_will_change! # Fix bug partial updates in Rails 2.1.0
-              self.#{column.to_s}[:#{f}] = val
+            self.details ||= {}
+            if val.nil?#{" || val.blank? " if t == String}
+              self.details.delete(:#{f})
+            else
+              self.details[:#{f}] = val
+            end
           end
         EOV
+
+        if t == :boolean
+          class_eval <<-EOS
+            def #{f}?
+              self.#{f} ? true : false
+            end
+          EOS
+        end
       end
       end
     end
