@@ -90,7 +90,6 @@ module HasDetails
           EOS
         end
       end
-      end
     end
   end
 
