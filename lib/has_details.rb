@@ -65,19 +65,19 @@ module HasDetails
           end
 
           def #{f}_before_type_cast
-            if self.details
-              self.details[:#{f}]
+            if self.#{column.to_s}
+              self.#{column.to_s}[:#{f}]
             end
           end
           
           def #{f}=(val)
             #{exception_code}
 
-            self.details ||= {}
+            self.#{column.to_s} ||= {}
             if val.nil?#{" || val.blank? " if t == String}
-              self.details.delete(:#{f})
+              self.#{column.to_s}.delete(:#{f})
             else
-              self.details[:#{f}] = val
+              self.#{column.to_s}[:#{f}] = val
             end
           end
         EOV
