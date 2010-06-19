@@ -58,6 +58,28 @@ module HasDetails
           "raise \"Assigned value must be a #{t.inspect}\" unless val.nil? || val.is_a?(#{t.inspect})"
         end
         
+        ar_type = case
+        when t == String
+          :string
+        when t == Integer
+          :integer
+        when t == BigDecimal
+          :decimal
+        when t == Date
+          :date
+        when t == Time
+          :datetime
+        when t == :boolean
+          :boolean
+        else
+          nil
+        end
+        
+        ar_column = ActiveRecord::ConnectionAdapters::Column.new f.to_s, nil, ar_type.to_s
+        class_eval do
+          columns_hash[f.to_s] = ar_column
+        end
+        
         class_eval <<-EOV
           def #{f}
               self.#{column.to_s} ||= {}
