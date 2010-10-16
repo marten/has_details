@@ -116,3 +116,5 @@ module HasDetails
   end
 
 end
+
+ActiveRecord::Base.send :include, HasDetails
