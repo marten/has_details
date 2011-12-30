@@ -1,5 +1,7 @@
 = HasDetails
 
+*This plugin is no longer maintained, and probably doesn't work with Rails 3.* Additionally, with Rails 3.2 it introduces the ActiveRecord store, which does pretty much what this plugin once did. http://weblog.rubyonrails.org/2011/12/20/rails-3-2-rc1-faster-dev-mode-routing-explain-queries-tagged-logger-store
+
 HasDetails allows you to store a large amount of (optional) attributes for any model's instance in a serialized column. It takes care of adding convenience methods to your model, and verifies that the value being assigned is indeed (one of) the type(s) required for that attribute.
 
 = Example
